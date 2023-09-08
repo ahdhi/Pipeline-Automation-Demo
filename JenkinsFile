@@ -1,14 +1,33 @@
 pipeline {
     agent any
 
+    environment {
+        JDK_TOOL = 'JDK 8'
+    }
+
     stages {
+        stage('Set Up Environment') {
+            steps {
+                script {
+                    def availableJDKs = tool name: 'JDK', type: 'hudson.model.JDK'
+                    for (jdk in availableJDKs) {
+                        if (isJDK8(jdk)) {
+                            JDK_TOOL = jdk
+                            break
+                        }
+                    }
+                }
+            }
+        }
+
         stage('Build') {
             steps {
                 script {
-                    // Set up Maven
                     def mvn = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
 
-                    // Run Maven build
+                    env.PATH = "${env.JDK_TOOL}/bin:${env.PATH}"
+                    env.JAVA_HOME = env.JDK_TOOL
+
                     sh "${mvn}/bin/mvn clean install"
                 }
             }
@@ -34,10 +53,7 @@ pipeline {
 
         stage('Unit and Integration Tests') {
             steps {
-                // Example: Run unit tests using Maven
                 sh 'mvn test'
-                
-                // Example: Run integration tests (replace with your specific commands)
                 sh './run_integration_tests.sh'
             }
             post {
@@ -62,7 +78,6 @@ pipeline {
 
         stage('Code Analysis') {
             steps {
-                // Example: Integrate code analysis using SonarQube
                 sh 'sonar-scanner'
             }
             post {
@@ -87,7 +102,6 @@ pipeline {
 
         stage('Security Scan') {
             steps {
-                // Example: Run security scan (replace with your specific commands)
                 sh './run_security_scan.sh'
             }
             post {
@@ -112,7 +126,6 @@ pipeline {
 
         stage('Deploy to Staging') {
             steps {
-                // Example: Deploy to staging server (replace with your deployment commands)
                 sh './deploy_to_staging.sh'
             }
             post {
@@ -137,7 +150,6 @@ pipeline {
 
         stage('Integration Tests on Staging') {
             steps {
-                // Example: Run integration tests on staging (replace with your specific commands)
                 sh './run_integration_tests_on_staging.sh'
             }
             post {
@@ -162,7 +174,6 @@ pipeline {
 
         stage('Deploy to Production') {
             steps {
-                // Example: Deploy to production server (replace with your deployment commands)
                 sh './deploy_to_production.sh'
             }
             post {
@@ -204,4 +215,8 @@ pipeline {
             )
         }
     }
+}
+
+def isJDK8(jdk) {
+    return jdk.contains("8") || jdk.contains("1.8")
 }
