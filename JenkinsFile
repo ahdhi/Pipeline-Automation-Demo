@@ -64,10 +64,14 @@ pipeline {
         }
 
         stage('Code Analysis') {
-            steps {
-                // Example: Integrate code analysis using SonarQube
+    steps {
+        script {
+            // Run SonarQube Scanner with the configured server
+            withSonarQubeEnv('SonarQubeAdhi') {
                 sh 'sonar-scanner'
             }
+        }
+    }
             post {
                 success {
                     emailext(
