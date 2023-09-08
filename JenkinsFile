@@ -1,19 +1,17 @@
 pipeline {
     agent any
 
-    stage('Build') {
-    steps {
-        script {
-            // Set up Maven
-            def mvnHome = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
-            def maven = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    // Set up Maven
+                    def mvn = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
 
-            // Run Maven build
-            sh "${mvnHome}/bin/mvn clean install"
-        }
-    }
-}
-
+                    // Run Maven build
+                    sh "${mvn}/bin/mvn clean install"
+                }
+            }
             post {
                 success {
                     emailext(
@@ -87,7 +85,105 @@ pipeline {
             }
         }
 
-        // Add similar email notifications for other stages (Security Scan, Deploy, etc.)
+        stage('Security Scan') {
+            steps {
+                // Example: Run security scan (replace with your specific commands)
+                sh './run_security_scan.sh'
+            }
+            post {
+                success {
+                    emailext(
+                        subject: "Security Scan Successful",
+                        body: "The security scan stage completed successfully.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
+                failure {
+                    emailext(
+                        subject: "Security Scan Failed",
+                        body: "The security scan stage failed. Check the logs for details.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
+            }
+        }
+
+        stage('Deploy to Staging') {
+            steps {
+                // Example: Deploy to staging server (replace with your deployment commands)
+                sh './deploy_to_staging.sh'
+            }
+            post {
+                success {
+                    emailext(
+                        subject: "Deployment to Staging Successful",
+                        body: "The deployment to staging stage completed successfully.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
+                failure {
+                    emailext(
+                        subject: "Deployment to Staging Failed",
+                        body: "The deployment to staging stage failed. Check the logs for details.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
+            }
+        }
+
+        stage('Integration Tests on Staging') {
+            steps {
+                // Example: Run integration tests on staging (replace with your specific commands)
+                sh './run_integration_tests_on_staging.sh'
+            }
+            post {
+                success {
+                    emailext(
+                        subject: "Integration Tests on Staging Successful",
+                        body: "The integration tests on staging stage completed successfully.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
+                failure {
+                    emailext(
+                        subject: "Integration Tests on Staging Failed",
+                        body: "The integration tests on staging stage failed. Check the logs for details.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
+            }
+        }
+
+        stage('Deploy to Production') {
+            steps {
+                // Example: Deploy to production server (replace with your deployment commands)
+                sh './deploy_to_production.sh'
+            }
+            post {
+                success {
+                    emailext(
+                        subject: "Deployment to Production Successful",
+                        body: "The deployment to production stage completed successfully.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
+                failure {
+                    emailext(
+                        subject: "Deployment to Production Failed",
+                        body: "The deployment to production stage failed. Check the logs for details.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
+            }
+        }
     }
 
     post {
