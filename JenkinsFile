@@ -1,12 +1,19 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Build') {
-            steps {
-                // Example: Build the code using Maven
-                sh 'mvn clean install'
-            }
+    stage('Build') {
+    steps {
+        script {
+            // Set up Maven
+            def mvnHome = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
+            def maven = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
+
+            // Run Maven build
+            sh "${mvnHome}/bin/mvn clean install"
+        }
+    }
+}
+
             post {
                 success {
                     emailext(
