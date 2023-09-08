@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+    // Define the SonarQube Scanner tool
+    def sonarqubeScanner = tool name: 'SonarQubeScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+}
     stages {
         stage('Build') {
             steps {
@@ -63,20 +67,16 @@ pipeline {
             }
         }
 
-        tools {
-    // Define the SonarQube Scanner tool
-    def sonarqubeScanner = tool name: 'SonarQubeScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-}
 
 stage('Code Analysis') {
-    steps {
-        script {
-            // Run SonarQube Scanner with the defined tool
-            withSonarQubeEnv('SonarQubeAdhi') {
-                sh "${sonarqubeScanner}/bin/sonar-scanner"
+            steps {
+                script {
+                    // Run SonarQube Scanner with the defined tool
+                    withSonarQubeEnv('SonarQubeAdhi') {
+                        sh "${sonarqubeScanner}/bin/sonar-scanner"
+                    }
+                }
             }
-        }
-    }
             post {
                 success {
                     emailext(
