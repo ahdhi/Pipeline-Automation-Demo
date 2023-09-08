@@ -1,5 +1,3 @@
-# Pipeline-Automation-Demo
-A demo for Jenkins pipeline automation with CI/CD stages, testing, code analysis, security scanning, and deployment.
 # Pipeline Automation Demo
 
 This repository demonstrates the setup of a Jenkins pipeline for Continuous Integration and Continuous Deployment (CI/CD). The pipeline includes various stages, from code compilation to deployment, and is designed to automate the development and deployment process.
@@ -45,7 +43,7 @@ These instructions will help you set up and configure the Jenkins pipeline in yo
 
 3. Modify the pipeline stages in the Jenkinsfile to fit your project's requirements and tools.
 
-##Usage
+### Usage
 
 Push changes to this repository on GitHub.
 
@@ -55,7 +53,7 @@ Monitor the pipeline progress in Jenkins.
 
 Receive email notifications with status updates and logs.
 
-##Contributing
+### Contributing
 Contributions are welcome! Please follow our Contribution Guidelines to get started.
 
 ##License
