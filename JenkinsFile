@@ -63,12 +63,17 @@ pipeline {
             }
         }
 
-        stage('Code Analysis') {
+        tools {
+    // Define the SonarQube Scanner tool
+    def sonarqubeScanner = tool name: 'SonarQubeScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+}
+
+stage('Code Analysis') {
     steps {
         script {
-            // Run SonarQube Scanner with the configured server
+            // Run SonarQube Scanner with the defined tool
             withSonarQubeEnv('SonarQubeAdhi') {
-                sh 'sonar-scanner'
+                sh "${sonarqubeScanner}/bin/sonar-scanner"
             }
         }
     }
