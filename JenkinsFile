@@ -67,7 +67,7 @@ pipeline {
     steps {
         script {
             // Run SonarQube Scanner with the configured server
-            withSonarQubeEnv('SonarQubeAdhi') {
+            withSonarQubeEnv('SonarQubeScanner') {
                 sh 'sonar-scanner'
             }
         }
