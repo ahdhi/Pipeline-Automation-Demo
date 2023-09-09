@@ -56,5 +56,5 @@ Receive email notifications with status updates and logs.
 ### Contributing
 Contributions are welcome! Please follow our Contribution Guidelines to get started.
 
-##License
+## License
 This project is licensed under the MIT License - see the LICENSE file for details.
