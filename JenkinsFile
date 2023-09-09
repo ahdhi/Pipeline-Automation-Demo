@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    tools {
+        // Define the SonarQube Scanner tool
+        def sonarqubeScanner = tool name: 'SonarQubeScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+    }
+
     stages {
         stage('Build') {
             steps {
@@ -33,16 +38,16 @@ pipeline {
         }
 
         stage('Unit and Integration Tests') {
-    steps {
-        script {
-            // Set up Maven
-            def mavenTool = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
-            def mavenHome = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
+            steps {
+                script {
+                    // Set up Maven
+                    def mavenTool = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
+                    def mavenHome = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
 
-            // Run Maven build
-            sh "${mavenHome}/bin/mvn test"
-        }
-    }
+                    // Run Maven build
+                    sh "${mavenHome}/bin/mvn test"
+                }
+            }
             post {
                 success {
                     emailext(
@@ -63,8 +68,7 @@ pipeline {
             }
         }
 
-
-stage('Code Analysis') {
+        stage('Code Analysis') {
             steps {
                 script {
                     // Run SonarQube Scanner with the defined tool
