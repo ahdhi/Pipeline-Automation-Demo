@@ -1,227 +1,72 @@
 pipeline {
     agent any
-
     stages {
-        stage('Install Tools') {
-            steps {
-                script {
-                    // Define and install the necessary tools
-                    def mvnTool = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
-                    def sonarqubeScanner = tool name: 'SonarQubeScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-
-                    // Optionally, you can print tool information
-                    echo "Maven Home: ${mvnTool}"
-                    echo "SonarQube Scanner Home: ${sonarqubeScanner}"
-                }
-            }
-        }
-
         stage('Build') {
             steps {
-                script {
-                    // Use the installed Maven tool
-                    def mvnHome = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
-
-                    // Run Maven build
-                    sh "${mvnHome}/bin/mvn clean install"
-                }
-            }
-            post {
-                success {
-                    emailext(
-                        subject: "Build Successful",
-                        body: "The build stage completed successfully.",
-                        to: "personal.adhithyan@gmail.com",
-                        attachLog: true,
-                    )
-                }
-                failure {
-                    emailext(
-                        subject: "Build Failed",
-                        body: "The build stage failed. Check the logs for details.",
-                        to: "personal.adhithyan@gmail.com",
-                        attachLog: true,
-                    )
-                }
+                // Use Maven to build your code
+                sh 'mvn clean package'
             }
         }
-
         stage('Unit and Integration Tests') {
             steps {
-                script {
-                    // Use the installed Maven tool
-                    def mvnHome = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
-
-                    // Run Maven test
-                    sh "${mvnHome}/bin/mvn test"
-                }
-            }
-            post {
-                success {
-                    emailext(
-                        subject: "Tests Successful",
-                        body: "The tests stage completed successfully.",
-                        to: "personal.adhithyan@gmail.com",
-                        attachLog: true,
-                    )
-                }
-                failure {
-                    emailext(
-                        subject: "Tests Failed",
-                        body: "The tests stage failed. Check the logs for details.",
-                        to: "personal.adhithyan@gmail.com",
-                        attachLog: true,
-                    )
-                }
+                // Run unit tests
+                sh 'npm install' // Example command for Node.js-based tests
+                sh 'npm test'     // Example command for running tests
+                
+                // Run integration tests
+                sh 'docker-compose up -d'  // Example command to start test environment
+                sh 'run_integration_tests_command'  // Replace with actual integration tests command
             }
         }
-
         stage('Code Analysis') {
             steps {
-                script {
-                    // Run SonarQube Scanner with the defined tool
-                    withSonarQubeEnv('SonarQubeAdhi') {
-                        sh "${sonarqubeScanner}/bin/sonar-scanner"
-                    }
-                }
-            }
-            post {
-                success {
-                    emailext(
-                        subject: "Code Analysis Successful",
-                        body: "The code analysis stage completed successfully.",
-                        to: "personal.adhithyan@gmail.com",
-                        attachLog: true,
-                    )
-                }
-                failure {
-                    emailext(
-                        subject: "Code Analysis Failed",
-                        body: "The code analysis stage failed. Check the logs for details.",
-                        to: "personal.adhithyan@gmail.com",
-                        attachLog: true,
-                    )
-                }
+                // Integrate a code analysis tool (e.g., SonarQube)
+                sh 'sonar-scanner' // Replace with your SonarQube analysis command
             }
         }
-
         stage('Security Scan') {
             steps {
-                // Example: Run security scan (replace with your specific commands)
-                sh './run_security_scan.sh'
-            }
-            post {
-                success {
-                    emailext(
-                        subject: "Security Scan Successful",
-                        body: "The security scan stage completed successfully.",
-                        to: "personal.adhithyan@gmail.com",
-                        attachLog: true,
-                    )
-                }
-                failure {
-                    emailext(
-                        subject: "Security Scan Failed",
-                        body: "The security scan stage failed. Check the logs for details.",
-                        to: "personal.adhithyan@gmail.com",
-                        attachLog: true,
-                    )
-                }
+                // Integrate a security scanning tool (e.g., OWASP ZAP)
+                sh 'owasp-zap-scan' // Replace with your OWASP ZAP scan command
             }
         }
-
         stage('Deploy to Staging') {
             steps {
-                // Example: Deploy to staging server (replace with your deployment commands)
-                sh './deploy_to_staging.sh'
-            }
-            post {
-                success {
-                    emailext(
-                        subject: "Deployment to Staging Successful",
-                        body: "The deployment to staging stage completed successfully.",
-                        to: "personal.adhithyan@gmail.com",
-                        attachLog: true,
-                    )
-                }
-                failure {
-                    emailext(
-                        subject: "Deployment to Staging Failed",
-                        body: "The deployment to staging stage failed. Check the logs for details.",
-                        to: "personal.adhithyan@gmail.com",
-                        attachLog: true,
-                    )
-                }
+                // Deploy the application to a staging server (e.g., AWS EC2 instance)
+                sh 'deploy_to_staging_script' // Replace with your deployment script
             }
         }
-
         stage('Integration Tests on Staging') {
             steps {
-                // Example: Run integration tests on staging (replace with your specific commands)
-                sh './run_integration_tests_on_staging.sh'
-            }
-            post {
-                success {
-                    emailext(
-                        subject: "Integration Tests on Staging Successful",
-                        body: "The integration tests on staging stage completed successfully.",
-                        to: "personal.adhithyan@gmail.com",
-                        attachLog: true,
-                    )
-                }
-                failure {
-                    emailext(
-                        subject: "Integration Tests on Staging Failed",
-                        body: "The integration tests on staging stage failed. Check the logs for details.",
-                        to: "personal.adhithyan@gmail.com",
-                        attachLog: true,
-                    )
-                }
+                // Run integration tests on the staging environment
+                sh 'run_integration_tests_on_staging' // Replace with actual staging tests command
             }
         }
-
         stage('Deploy to Production') {
             steps {
-                // Example: Deploy to production server (replace with your deployment commands)
-                sh './deploy_to_production.sh'
-            }
-            post {
-                success {
-                    emailext(
-                        subject: "Deployment to Production Successful",
-                        body: "The deployment to production stage completed successfully.",
-                        to: "personal.adhithyan@gmail.com",
-                        attachLog: true,
-                    )
-                }
-                failure {
-                    emailext(
-                        subject: "Deployment to Production Failed",
-                        body: "The deployment to production stage failed. Check the logs for details.",
-                        to: "personal.adhithyan@gmail.com",
-                        attachLog: true,
-                    )
-                }
+                // Deploy the application to a production server (e.g., AWS EC2 instance)
+                sh 'deploy_to_production_script' // Replace with your production deployment script
             }
         }
     }
-
     post {
-        success {
-            emailext(
-                subject: "Pipeline Successful",
-                body: "The Jenkins pipeline completed successfully.",
-                to: "personal.adhithyan@gmail.com",
-                attachLog: true,
-            )
-        }
         failure {
-            emailext(
-                subject: "Pipeline Failed",
-                body: "The Jenkins pipeline failed. Check the logs for details.",
-                to: "personal.adhithyan@gmail.com",
-                attachLog: true,
+            // Send notification email on failure
+            emailext (
+                subject: "Pipeline Failed: ${currentBuild.fullDisplayName}",
+                body: "The pipeline has failed. Please check the logs for details.",
+                to: 'your_email@example.com'
             )
+            archiveArtifacts 'target/*.jar' // Archive build artifacts
+        }
+        success {
+            // Send notification email on success
+            emailext (
+                subject: "Pipeline Successful: ${currentBuild.fullDisplayName}",
+                body: "The pipeline has succeeded.",
+                to: 'your_email@example.com'
+            )
+            archiveArtifacts 'target/*.jar' // Archive build artifacts
         }
     }
 }
