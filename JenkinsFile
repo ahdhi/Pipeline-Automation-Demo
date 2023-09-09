@@ -1,72 +1,116 @@
 pipeline {
     agent any
+
+    tools {
+        // Define the SonarQube Scanner tool
+        sonarqubeScanner = tool name: 'SonarQubeScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+        // Define the Maven tool
+        maven = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
+    }
+
     stages {
         stage('Build') {
             steps {
-                // Use Maven to build your code
-                sh 'mvn clean package'
+                script {
+                    // Run Maven build
+                    sh "${mvn}/bin/mvn clean install"
+                }
+            }
+            post {
+                success {
+                    emailext(
+                        subject: "Build Successful",
+                        body: "The build stage completed successfully.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
+                failure {
+                    emailext(
+                        subject: "Build Failed",
+                        body: "The build stage failed. Check the logs for details.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
             }
         }
+
         stage('Unit and Integration Tests') {
             steps {
-                // Run unit tests
-                sh 'npm install' // Example command for Node.js-based tests
-                sh 'npm test'     // Example command for running tests
-                
-                // Run integration tests
-                sh 'docker-compose up -d'  // Example command to start test environment
-                sh 'run_integration_tests_command'  // Replace with actual integration tests command
+                script {
+                    // Run Maven test
+                    sh "${mvn}/bin/mvn test"
+                }
+            }
+            post {
+                success {
+                    emailext(
+                        subject: "Tests Successful",
+                        body: "The tests stage completed successfully.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
+                failure {
+                    emailext(
+                        subject: "Tests Failed",
+                        body: "The tests stage failed. Check the logs for details.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
             }
         }
+
         stage('Code Analysis') {
             steps {
-                // Integrate a code analysis tool (e.g., SonarQube)
-                sh 'sonar-scanner' // Replace with your SonarQube analysis command
+                script {
+                    // Run SonarQube Scanner with the defined tool
+                    withSonarQubeEnv('SonarQubeAdhi') {
+                        sh "${sonarqubeScanner}/bin/sonar-scanner"
+                    }
+                }
+            }
+            post {
+                success {
+                    emailext(
+                        subject: "Code Analysis Successful",
+                        body: "The code analysis stage completed successfully.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
+                failure {
+                    emailext(
+                        subject: "Code Analysis Failed",
+                        body: "The code analysis stage failed. Check the logs for details.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
             }
         }
-        stage('Security Scan') {
-            steps {
-                // Integrate a security scanning tool (e.g., OWASP ZAP)
-                sh 'owasp-zap-scan' // Replace with your OWASP ZAP scan command
-            }
-        }
-        stage('Deploy to Staging') {
-            steps {
-                // Deploy the application to a staging server (e.g., AWS EC2 instance)
-                sh 'deploy_to_staging_script' // Replace with your deployment script
-            }
-        }
-        stage('Integration Tests on Staging') {
-            steps {
-                // Run integration tests on the staging environment
-                sh 'run_integration_tests_on_staging' // Replace with actual staging tests command
-            }
-        }
-        stage('Deploy to Production') {
-            steps {
-                // Deploy the application to a production server (e.g., AWS EC2 instance)
-                sh 'deploy_to_production_script' // Replace with your production deployment script
-            }
-        }
+
+        // Add stages for Security Scan, Deployment, and Integration Tests on Staging and Production as needed.
     }
+
     post {
-        failure {
-            // Send notification email on failure
-            emailext (
-                subject: "Pipeline Failed: ${currentBuild.fullDisplayName}",
-                body: "The pipeline has failed. Please check the logs for details.",
-                to: 'your_email@example.com'
-            )
-            archiveArtifacts 'target/*.jar' // Archive build artifacts
-        }
         success {
-            // Send notification email on success
-            emailext (
-                subject: "Pipeline Successful: ${currentBuild.fullDisplayName}",
-                body: "The pipeline has succeeded.",
-                to: 'your_email@example.com'
+            emailext(
+                subject: "Pipeline Successful",
+                body: "The Jenkins pipeline completed successfully.",
+                to: "personal.adhithyan@gmail.com",
+                attachLog: true,
             )
-            archiveArtifacts 'target/*.jar' // Archive build artifacts
+        }
+        failure {
+            emailext(
+                subject: "Pipeline Failed",
+                body: "The Jenkins pipeline failed. Check the logs for details.",
+                to: "personal.adhithyan@gmail.com",
+                attachLog: true,
+            )
         }
     }
 }
