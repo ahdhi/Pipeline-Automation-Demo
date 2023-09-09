@@ -1,20 +1,29 @@
 pipeline {
     agent any
 
-    tools {
-        // Define the SonarQube Scanner tool
-        def sonarqubeScanner = tool name: 'SonarQubeScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-    }
-
     stages {
+        stage('Install Tools') {
+            steps {
+                script {
+                    // Define and install the necessary tools
+                    def mvnTool = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
+                    def sonarqubeScanner = tool name: 'SonarQubeScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+
+                    // Optionally, you can print tool information
+                    echo "Maven Home: ${mvnTool}"
+                    echo "SonarQube Scanner Home: ${sonarqubeScanner}"
+                }
+            }
+        }
+
         stage('Build') {
             steps {
                 script {
-                    // Set up Maven
-                    def mvn = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
+                    // Use the installed Maven tool
+                    def mvnHome = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
 
                     // Run Maven build
-                    sh "${mvn}/bin/mvn clean install"
+                    sh "${mvnHome}/bin/mvn clean install"
                 }
             }
             post {
@@ -40,12 +49,11 @@ pipeline {
         stage('Unit and Integration Tests') {
             steps {
                 script {
-                    // Set up Maven
-                    def mavenTool = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
-                    def mavenHome = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
+                    // Use the installed Maven tool
+                    def mvnHome = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
 
-                    // Run Maven build
-                    sh "${mavenHome}/bin/mvn test"
+                    // Run Maven test
+                    sh "${mvnHome}/bin/mvn test"
                 }
             }
             post {
