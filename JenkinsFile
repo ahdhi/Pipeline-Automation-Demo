@@ -65,8 +65,16 @@ pipeline {
         stage('Code Analysis') {
     steps {
         script {
-            // Run the Checkmarx scan with the appropriate options
-            sh '/Users/adhi/Documents/CxConsolePlugin-1.1.26/runCxConsole.sh scan -v -s .'
+            // Set up Checkmarx CLI
+            def checkmarxHome = tool name: 'Checkmarx', type: 'hudson.model.ToolInstallation'
+
+            // Git URL
+            def githubRepoUrl = 'https://github.com/ahdhi/Pipeline-Automation-Demo.git'
+
+            // Run Checkmarx scan
+            sh """
+                ${checkmarxHome}/runCxConsole.sh scan -v -locationtype GIT -locationpath "${githubRepoUrl}"
+            """
         }
     }
             post {
