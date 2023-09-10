@@ -70,6 +70,7 @@ pipeline {
                     withSonarQubeEnv('SonarScanner') {
                         bat "${scannerHome}/bin/sonar-scanner.bat"
                     }
+                }
             }
             post {
                 success {
