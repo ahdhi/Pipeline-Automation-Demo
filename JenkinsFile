@@ -66,10 +66,10 @@ pipeline {
         stage('Code Analysis') {
     steps {
         script {
-            // Run SonarQube Scanner with the configured server
-            withSonarQubeEnv('SonarQubeScanner') {
-                sh 'sonar-scanner'
-            }
+                    def scannerPath = '/Users/adhi/Documents/sonar-scanner-5.0.1.3006-macosx/bin/sonar-scanner'
+                    
+                    sh "${scannerPath}"
+                }
         }
     }
             post {
