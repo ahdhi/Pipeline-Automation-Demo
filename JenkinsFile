@@ -66,13 +66,12 @@ pipeline {
     steps {
         script {
             // Set up environment variables or any required configurations
-            def cxHome = '/Users/adhi/Documents/CxConsolePlugin-1.1.26'  // Path to Checkmarx CLI
-            
+            def cxScriptPath = '/Users/adhi/Documents/CxConsolePlugin-1.1.26/runCxConsole.sh'
+
             // Run the Checkmarx scan
-            sh(script: "${cxHome}/CxConsolePlugin runScan -v -sast -location .", returnStatus: true)
+            sh(script: "${cxScriptPath} scan -v -loc .", returnStatus: true)
         }
     }
-
             post {
                 success {
                     emailext(
