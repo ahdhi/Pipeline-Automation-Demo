@@ -63,15 +63,15 @@ pipeline {
         }
 
         stage('Code Analysis') {
-    steps {
-        script {
-            // Set up environment variables or any required configurations
-            def cxScriptPath = '/Users/adhi/Documents/CxConsolePlugin-1.1.26/runCxConsole.sh'
+            steps {
+                script {
+                    // Set up environment variables or any required configurations
+                    def cxScriptPath = '/Users/adhi/Documents/CxConsolePlugin-1.1.26/runCxConsole.sh'
 
-            // Run the Checkmarx scan
-            sh(script: "${cxScriptPath} scan -v -loc .", returnStatus: true)
-        }
-    }
+                    // Run the Checkmarx scan
+                    sh(script: "${cxScriptPath} scan -v -loc .", returnStatus: true)
+                }
+            }
 
             post {
                 success {
@@ -125,36 +125,23 @@ pipeline {
         }
 
         stage('Deploy to Staging') {
-    steps {
-        script {
-            // Set up environment variables and configuration for deploying to your staging server
-            def stagingServer = 'ec2-13-211-229-239'
-            def stagingUser = 'ec2-user' // or your AWS instance user
-            def privateKey = credentials('ec2-user') // Reference your SSH private key credential
+            steps {
+                script {
+                    // Set up environment variables and configuration for deploying to your staging server
+                    def stagingServer = 'ec2-13-211-229-239.ap-southeast-2.compute.amazonaws.com'
+                    def stagingUser = 'ec2-user' // or your AWS instance user
+                    def privateKey = credentials('ec2-user') // Reference your SSH private key credential
+                    def githubRepoUrl = 'https://github.com/ahdhi/Pipeline-Automation-Demo'
 
-            // SSH into the staging server and deploy your application
-            sshagent(['your-ssh-key-credential-id']) {
-                sh "ssh -o StrictHostKeyChecking=no -i ${privateKey} ${stagingUser}@${stagingServer} 'cd /path/to/your/application && git pull && ./deploy.sh'"
-            }
-        }
-    }
-}
-            post {
-                success {
-                    emailext(
-                        subject: "Deployment to Staging Successful",
-                        body: "The deployment to staging stage completed successfully.",
-                        to: "personal.adhithyan@gmail.com",
-                        attachLog: true,
-                    )
-                }
-                failure {
-                    emailext(
-                        subject: "Deployment to Staging Failed",
-                        body: "The deployment to staging stage failed. Check the logs for details.",
-                        to: "personal.adhithyan@gmail.com",
-                        attachLog: true,
-                    )
+                    // SSH into the staging server, clone your GitHub repository, and deploy your application
+                    sshagent(['ec2-user']) {
+                        sh """
+                        ssh -o StrictHostKeyChecking=no -i ${privateKey} ${stagingUser}@${stagingServer} '
+                        git clone ${githubRepoUrl} /var/www/myapp
+                        cd /var/www/myapp
+                        ./deploy.sh'
+                        """
+                    }
                 }
             }
         }
