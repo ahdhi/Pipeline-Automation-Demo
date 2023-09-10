@@ -93,10 +93,16 @@ pipeline {
             }
         }
 
-        stage('Security Scan') {
+        stage('Security Scan with OWASP ZAP') {
             steps {
-                // Example: Run security scan (replace with your specific commands)
-                sh './run_security_scan.sh'
+                script {
+                    // Set up environment variables or any required configurations
+                    def zapScriptPath = '/Applications/OWASP ZAP.app/Contents/Java/zap.sh'
+                    def githubRepoUrl = 'https://github.com/ahdhi/Pipeline-Automation-Demo'
+
+                    // Run OWASP ZAP scan on the GitHub repository
+                    sh(script: "${zapScriptPath} -cmd -quickurl ${githubRepoUrl}", returnStatus: true)
+                }
             }
             post {
                 success {
