@@ -68,8 +68,8 @@ pipeline {
                     def scannerHome = tool name: 'SonarScanner', type: 'hudson.plugins.sonar.MsBuildSQRunnerInstallation'
                     
                     withSonarQubeEnv('SonarScanner') {
-                        bat "${scannerHome}/bin/sonar-scanner.bat"
-                    }
+                bat "${scannerHome}/bin/sonar-scanner.bat"
+            }
                 }
             }
             post {
