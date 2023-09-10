@@ -65,9 +65,11 @@ pipeline {
         stage('Code Analysis') {
             steps {
                 script {
-                    def scannerPath = '/usr/local/Cellar/sonar-scanner/5.0.1.3006/bin/sonar-scanner'
-                    sh "${scannerPath}"
-                }
+                    def scannerHome = tool name: 'SonarQube Scanner', type: 'hudson.plugins.sonar.MsBuildSQRunnerInstallation'
+                    
+                    withSonarQubeEnv('SonarScanner') {
+                        bat "${scannerHome}/bin/sonar-scanner.bat"
+                    }
             }
             post {
                 success {
