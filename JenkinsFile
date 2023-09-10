@@ -6,10 +6,10 @@ pipeline {
             steps {
                 script {
                     // Set up Maven
-                    def mvn = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
+                    def mvnHome = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
 
                     // Run Maven build
-                    sh "${mvn}/bin/mvn clean install"
+                    sh "${mvnHome}/bin/mvn clean install"
                 }
             }
             post {
@@ -33,16 +33,15 @@ pipeline {
         }
 
         stage('Unit and Integration Tests') {
-    steps {
-        script {
-            // Set up Maven
-            def mavenTool = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
-            def mavenHome = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
+            steps {
+                script {
+                    // Set up Maven
+                    def mvnHome = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
 
-            // Run Maven build
-            sh "${mavenHome}/bin/mvn test"
-        }
-    }
+                    // Run Maven tests
+                    sh "${mvnHome}/bin/mvn test"
+                }
+            }
             post {
                 success {
                     emailext(
@@ -64,14 +63,12 @@ pipeline {
         }
 
         stage('Code Analysis') {
-    steps {
-        script {
+            steps {
+                script {
                     def scannerPath = '/Users/adhi/Documents/sonar-scanner-5.0.1.3006-macosx/bin/sonar-scanner'
-                    
                     sh "${scannerPath}"
                 }
-        }
-    }
+            }
             post {
                 success {
                     emailext(
