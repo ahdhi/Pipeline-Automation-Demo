@@ -63,15 +63,17 @@ pipeline {
         }
 
         stage('Code Analysis') {
-            steps {
-                script {
-                    def scannerHome = tool name: 'SonarScanner', type: 'hudson.plugins.sonar.MsBuildSQRunnerInstallation'
-                    
-                    withSonarQubeEnv('SonarScanner') {
-                bat "${scannerHome}/bin/sonar-scanner.bat"
+    agent any // We can use any agent for this stage
+
+    steps {
+        script {
+            def scannerHome = tool name: 'SonarQube Scanner', type: 'hudson.plugins.sonar.MsBuildSQRunnerInstallation'
+            
+            withSonarQubeEnv('SonarScanner') {
+                sh "${scannerHome}/bin/sonar-scanner"
             }
-                }
-            }
+        }
+    }
             post {
                 success {
                     emailext(
