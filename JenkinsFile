@@ -129,7 +129,7 @@ pipeline {
                 script {
                     // Set up environment variables and configuration for deploying to your staging server
                     def stagingServer = 'ec2-13-211-229-239.ap-southeast-2.compute.amazonaws.com'
-                    def stagingUser = 'ec2-user' // or your AWS instance user
+                    def stagingUser = 'i-0961c6296f30a6cac' // or your AWS instance user
                     def privateKey = credentials('jenkins') // Reference your SSH private key credential
                     def githubRepoUrl = 'https://github.com/ahdhi/Pipeline-Automation-Demo'
 
