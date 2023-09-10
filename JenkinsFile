@@ -64,6 +64,10 @@ pipeline {
 
         stage('Code Analysis') {
     agent any // We can use any agent for this stage
+    environment {
+        PATH = "${tool name: 'SonarQube Scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin:${env.PATH}"
+    }
+
 
     steps {
         script {
