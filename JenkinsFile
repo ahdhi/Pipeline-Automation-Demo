@@ -62,11 +62,16 @@ pipeline {
             }
         }
 
-        stage('Code Analysis with Checkmarx') {
-            steps {
-                // Example: Run Checkmarx analysis (replace with your specific commands)
-                sh './run_checkmarx_scan.sh'
-            }
+        stage('Code Analysis') {
+    steps {
+        script {
+            // Set up environment variables or any required configurations
+            def cxHome = '/Users/adhi/Documents/CxConsolePlugin-1.1.26'  // Path to Checkmarx CLI
+            
+            // Run the Checkmarx scan
+            sh(script: "${cxHome}/CxConsolePlugin runScan -v -sast -location .", returnStatus: true)
+        }
+    }
 
             post {
                 success {
