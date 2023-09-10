@@ -1,6 +1,30 @@
 pipeline {
     agent any
+ stages {
+        stage('Install Checkmarx') {
+            steps {
+                script {
+                    def cxToolDir = tool name: 'Checkmarx', type: 'ToolInstallation'
 
+                    // Check if Checkmarx is already installed
+                    if (!isToolInstalled('Checkmarx')) {
+                        // Download Checkmarx CLI
+                        def downloadUrl = 'https://example.com/checkmarx-cli.zip' // Replace with the actual download URL
+                        def installDir = tool installation: 'Checkmarx', name: 'Checkmarx', type: 'ToolInstallation'
+
+                        unstash name: 'checkmarx-cli', allowEmpty: true
+
+                        sh """
+                        wget -O checkmarx-cli.zip $downloadUrl
+                        unzip checkmarx-cli.zip -d $installDir
+                        """
+
+                        // Mark Checkmarx as installed
+                        tool name: 'Checkmarx', type: 'ToolInstallation'
+                    }
+                }
+            }
+        }
     stages {
         stage('Build') {
             steps {
@@ -64,19 +88,10 @@ pipeline {
 
         stage('Code Analysis') {
     steps {
-        script {
-            // Set up Checkmarx CLI
-            def checkmarxHome = tool name: 'Checkmarx', type: 'hudson.model.ToolInstallation'
-
-            // Git URL
-            def githubRepoUrl = 'https://github.com/ahdhi/Pipeline-Automation-Demo.git'
-
-            // Run Checkmarx scan
-            sh """
-                ${checkmarxHome}/runCxConsole.sh scan -v -locationtype GIT -locationpath "${githubRepoUrl}"
-            """
+                // Jenkins installs Checkmarx, so you can use it here
+                sh 'checkmarx scan -v -loc .'
+            }
         }
-    }
             post {
                 success {
                     emailext(
