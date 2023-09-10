@@ -125,10 +125,20 @@ pipeline {
         }
 
         stage('Deploy to Staging') {
-            steps {
-                // Example: Deploy to staging server (replace with your deployment commands)
-                sh './deploy_to_staging.sh'
+    steps {
+        script {
+            // Set up environment variables and configuration for deploying to your staging server
+            def stagingServer = 'ec2-13-211-229-239'
+            def stagingUser = 'ec2-user' // or your AWS instance user
+            def privateKey = credentials('ec2-user') // Reference your SSH private key credential
+
+            // SSH into the staging server and deploy your application
+            sshagent(['your-ssh-key-credential-id']) {
+                sh "ssh -o StrictHostKeyChecking=no -i ${privateKey} ${stagingUser}@${stagingServer} 'cd /path/to/your/application && git pull && ./deploy.sh'"
             }
+        }
+    }
+}
             post {
                 success {
                     emailext(
