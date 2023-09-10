@@ -62,13 +62,10 @@ pipeline {
             }
         }
 
-        stage('Code Analysis') {
-            agent any
+        stage('Code Analysis with Checkmarx') {
             steps {
-                // Jenkins installs SonarQube
-                withSonarQubeEnv('SonarScanner') {
-                    sh 'mvn clean install sonar:sonar'
-                }
+                // Example: Run Checkmarx analysis (replace with your specific commands)
+                sh './run_checkmarx_scan.sh'
             }
 
             post {
