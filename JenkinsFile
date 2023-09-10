@@ -64,19 +64,13 @@ pipeline {
 
         stage('Code Analysis') {
             agent any
-            environment {
-                PATH = "${tool name: 'SonarQube Scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin:${env.PATH}"
-            }
-
             steps {
-                script {
-                    def scannerHome = tool name: 'SonarQube Scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-
-                    withSonarQubeEnv('SonarScanner') {
-                        sh "${scannerHome}/bin/sonar-scanner"
-                    }
+                // Jenkins installs SonarQube
+                withSonarQubeEnv('SonarScanner') {
+                    sh 'mvn clean install sonar:sonar'
                 }
             }
+
             post {
                 success {
                     emailext(
