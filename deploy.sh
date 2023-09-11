@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Navigate to the directory containing your Maven project
-cd /var/lib/jenkins/workspace/Pipeline-Automation-Demo
-
 # Build the Maven project using 'mvn clean install' (replace with your desired Maven goals)
 mvn clean install
 
