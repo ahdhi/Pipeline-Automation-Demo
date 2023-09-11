@@ -1,60 +1,221 @@
 pipeline {
     agent any
-    environment {
-        // Define environment variables if needed
-    }
+
     stages {
         stage('Build') {
             steps {
-                // Use a build automation tool like Maven
-                // Example: sh 'mvn clean package'
+                script {
+                    // Set up Maven
+                    def mvnHome = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
+
+                    // Run Maven build
+                    sh "${mvnHome}/bin/mvn clean install"
+                }
+            }
+            post {
+                success {
+                    emailext(
+                        subject: "Build Successful",
+                        body: "The build stage completed successfully.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
+                failure {
+                    emailext(
+                        subject: "Build Failed",
+                        body: "The build stage failed. Check the logs for details.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
             }
         }
+
         stage('Unit and Integration Tests') {
             steps {
-                // Use test automation tools for unit and integration tests
-                // Example: sh 'npm test' or 'pytest'
+                script {
+                    // Set up Maven
+                    def mvnHome = tool name: 'Maven', type: 'hudson.tasks.Maven$MavenInstallation'
+
+                    // Run Maven tests
+                    sh "${mvnHome}/bin/mvn test"
+                }
+            }
+            post {
+                success {
+                    emailext(
+                        subject: "Tests Successful",
+                        body: "The tests stage completed successfully.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
+                failure {
+                    emailext(
+                        subject: "Tests Failed",
+                        body: "The tests stage failed. Check the logs for details.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
             }
         }
+
         stage('Code Analysis') {
-            steps {
-                // Integrate a code analysis tool
-                // Example: sh 'sonar-scanner'
+    steps {
+        script {
+            // Set up environment variables or any required configurations
+            def cxScriptPath = '/Users/adhi/Documents/CxConsolePlugin-1.1.26/runCxConsole.sh'
+
+            // Run the Checkmarx scan
+            sh(script: "${cxScriptPath} scan -v -loc .", returnStatus: true)
+        }
+    }
+
+            post {
+                success {
+                    emailext(
+                        subject: "Code Analysis Successful",
+                        body: "The code analysis stage completed successfully.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
+                failure {
+                    emailext(
+                        subject: "Code Analysis Failed",
+                        body: "The code analysis stage failed. Check the logs for details.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
             }
         }
-        stage('Security Scan') {
+
+        stage('Security Scan with OWASP ZAP') {
             steps {
-                // Integrate a security scanning tool
-                // Example: sh 'npm audit'
+                script {
+                    // Set up environment variables or any required configurations
+                    def zapScriptPath = '/Applications/OWASP ZAP.app/Contents/Java/zap.sh'
+                    def githubRepoUrl = 'https://github.com/ahdhi/Pipeline-Automation-Demo'
+
+                    // Run OWASP ZAP scan on the GitHub repository
+                    sh(script: "${zapScriptPath} -cmd -quickurl ${githubRepoUrl}", returnStatus: true)
+                }
+            }
+            post {
+                success {
+                    emailext(
+                        subject: "Security Scan Successful",
+                        body: "The security scan stage completed successfully.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
+                failure {
+                    emailext(
+                        subject: "Security Scan Failed",
+                        body: "The security scan stage failed. Check the logs for details.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
             }
         }
+
         stage('Deploy to Staging') {
             steps {
-                // Deploy to a staging server (e.g., AWS EC2)
-                // Example: sh 'aws deploy-to-staging-script.sh'
+                // Example: Deploy to staging server (replace with your deployment commands)
+                sh './deploy_to_staging.sh'
+            }
+            post {
+                success {
+                    emailext(
+                        subject: "Deployment to Staging Successful",
+                        body: "The deployment to staging stage completed successfully.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
+                failure {
+                    emailext(
+                        subject: "Deployment to Staging Failed",
+                        body: "The deployment to staging stage failed. Check the logs for details.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
             }
         }
+
         stage('Integration Tests on Staging') {
             steps {
-                // Run integration tests on the staging environment
-                // Example: sh 'npm run integration-test'
+                // Example: Run integration tests on staging (replace with your specific commands)
+                sh './run_integration_tests_on_staging.sh'
+            }
+            post {
+                success {
+                    emailext(
+                        subject: "Integration Tests on Staging Successful",
+                        body: "The integration tests on staging stage completed successfully.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
+                failure {
+                    emailext(
+                        subject: "Integration Tests on Staging Failed",
+                        body: "The integration tests on staging stage failed. Check the logs for details.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
             }
         }
+
         stage('Deploy to Production') {
             steps {
-                // Deploy to a production server (e.g., AWS EC2)
-                // Example: sh 'aws deploy-to-production-script.sh'
+                // Example: Deploy to production server (replace with your deployment commands)
+                sh './deploy_to_production.sh'
+            }
+            post {
+                success {
+                    emailext(
+                        subject: "Deployment to Production Successful",
+                        body: "The deployment to production stage completed successfully.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
+                failure {
+                    emailext(
+                        subject: "Deployment to Production Failed",
+                        body: "The deployment to production stage failed. Check the logs for details.",
+                        to: "personal.adhithyan@gmail.com",
+                        attachLog: true,
+                    )
+                }
             }
         }
     }
+
     post {
         success {
-            // Send success notification email with logs as attachment
-            emailext attachLog: true, subject: 'Pipeline Successful', to: 'personal.adhithyan@gmail.com'
+            emailext(
+                subject: "Pipeline Successful",
+                body: "The Jenkins pipeline completed successfully.",
+                to: "personal.adhithyan@gmail.com",
+                attachLog: true,
+            )
         }
         failure {
-            // Send failure notification email with logs as attachment
-            emailext attachLog: true, subject: 'Pipeline Failed', to: 'personal.adhithyan@gmail.com'
+            emailext(
+                subject: "Pipeline Failed",
+                body: "The Jenkins pipeline failed. Check the logs for details.",
+                to: "personal.adhithyan@gmail.com",
+                attachLog: true,
+            )
         }
     }
 }
