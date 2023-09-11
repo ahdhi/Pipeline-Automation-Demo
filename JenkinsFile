@@ -153,6 +153,7 @@ pipeline {
         stage('Integration Tests on Staging') {
             steps {
                 // Example: Run integration tests on staging (replace with your specific commands)
+                sh "chmod +x ./integration.sh"
                 sh './integration.sh'
             }
             post {
