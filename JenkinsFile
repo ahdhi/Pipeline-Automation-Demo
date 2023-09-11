@@ -153,7 +153,7 @@ pipeline {
         stage('Integration Tests on Staging') {
             steps {
                 // Example: Run integration tests on staging (replace with your specific commands)
-                sh './run_integration_tests_on_staging.sh'
+                sh './integration.sh'
             }
             post {
                 success {
