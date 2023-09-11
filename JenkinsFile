@@ -126,7 +126,8 @@ pipeline {
 
         stage('Deploy to Staging') {
             steps {
-                // Example: Deploy to staging server (replace with your deployment commands)
+                 // Example: Deploy to staging server (replace with your deployment commands)
+                    sh "chmod +x -R ${env.WORKSPACE}"                
                 sh './deploy.sh'
             }
             post {
