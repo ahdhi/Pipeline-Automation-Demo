@@ -13,11 +13,13 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Stage 1: Build - Build the code using Maven'
+                sleep(time: 3, unit: 'SECONDS')
             }
         }
         stage('Unit and Integration Tests') {
             steps {
                 echo 'Stage 2: Unit and Integration Tests - Use JUnit for automated unit tests'
+                sleep(time: 5, unit: 'SECONDS')
             }
             post {
                 success {
@@ -33,11 +35,13 @@ pipeline {
         stage('Code Analysis') {
             steps {
                 echo 'Stage 3: Code Analysis - Integrate SonarQube for code analysis'
+                sleep(time: 6, unit: 'SECONDS')
             }
         }
         stage('Security Scan') {
             steps {
                 echo 'Stage 4: Security Scan - Perform security scans with OWASP ZAP'
+                sleep(time: 8, unit: 'SECONDS')
             }
             post {
                 success {
@@ -53,11 +57,13 @@ pipeline {
         stage('Deploy to Staging') {
             steps {
                 echo 'Stage 5: Deploy to Staging - Deploy the application to a staging server'
+                sleep(time: 16, unit: 'SECONDS')
             }
         }
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Stage 6: Integration Tests on Staging - Run integration tests on the staging environment'
+                sleep(time: 10, unit: 'SECONDS')
             }
         }
         stage('Deploy to Production') {
