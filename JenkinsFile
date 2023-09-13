@@ -1,5 +1,10 @@
 pipeline {
     agent any
+    def emailStatus(stageName, status) {
+    emailext subject: "Pipeline Stage: ${stageName} - ${status}",
+              body: "The ${stageName} stage has ${status.toLowerCase()}",
+              to: "personal.adhithyan@gmail.com",
+              attachLog: true
     stages {
         stage('Build') {
             steps {
@@ -13,10 +18,11 @@ pipeline {
             post {
                 success {
                     echo 'Unit and Integration Tests passed!'
+                    emailStatus('Unit and Integration Tests', 'Passed Test Stage Successfully')
                 }
                 failure {
                     echo 'Unit and Integration Tests failed!'
-                    emailStatus('Unit and Integration Tests', 'FAILURE')
+                    emailStatus('Unit and Integration Tests', 'Failed Test Stage')
                 }
             }
         }
@@ -32,10 +38,11 @@ pipeline {
             post {
                 success {
                     echo 'Security Scan passed!'
+                    emailStatus('Security Scan', 'Passed Security Scan Successfully')
                 }
                 failure {
                     echo 'Security Scan failed!'
-                    emailStatus('Security Scan', 'FAILURE')
+                    emailStatus('Security Scan', 'Failed Security Scan')
                 }
             }
         }
@@ -56,10 +63,4 @@ pipeline {
         }
     }
 }
-
-def emailStatus(stageName, status) {
-    emailext subject: "Pipeline Stage: ${stageName} - ${status}",
-              body: "The ${stageName} stage has ${status.toLowerCase()}",
-              to: "personal.adhithyan@gmail.com",
-              attachLog: true
 }
