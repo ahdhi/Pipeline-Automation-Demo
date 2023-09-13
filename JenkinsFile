@@ -5,6 +5,7 @@ pipeline {
               body: "The ${stageName} stage has ${status.toLowerCase()}",
               to: "personal.adhithyan@gmail.com",
               attachLog: true
+}
     stages {
         stage('Build') {
             steps {
@@ -63,4 +64,4 @@ pipeline {
         }
     }
 }
-}
+
