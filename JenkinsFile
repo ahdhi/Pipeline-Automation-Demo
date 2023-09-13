@@ -1,27 +1,36 @@
 pipeline {
+    // Define the agent (where the pipeline should run)
     agent any
+
+    // Define a function to send email notifications
     def emailStatus(stageName, status) {
-    emailext subject: "Pipeline Stage: ${stageName} - ${status}",
-              body: "The ${stageName} stage has ${status.toLowerCase()}",
-              to: "personal.adhithyan@gmail.com",
-              attachLog: true
-}
+        emailext subject: "Pipeline Stage: ${stageName} - ${status}",
+                  body: "The ${stageName} stage has ${status.toLowerCase()}",
+                  to: "personal.adhithyan@gmail.com",
+                  attachLog: true
+    }
+
+    // Define the pipeline stages
     stages {
         stage('Build') {
             steps {
+                // Execute the build stage
                 echo 'Stage 1: Build - Build the code using Maven'
             }
         }
         stage('Unit and Integration Tests') {
             steps {
+                // Execute the unit and integration tests stage
                 echo 'Stage 2: Unit and Integration Tests - Use JUnit for automated unit tests'
             }
             post {
                 success {
+                    // Actions to take on success
                     echo 'Unit and Integration Tests passed!'
                     emailStatus('Unit and Integration Tests', 'Passed Test Stage Successfully')
                 }
                 failure {
+                    // Actions to take on failure
                     echo 'Unit and Integration Tests failed!'
                     emailStatus('Unit and Integration Tests', 'Failed Test Stage')
                 }
@@ -29,19 +38,23 @@ pipeline {
         }
         stage('Code Analysis') {
             steps {
+                // Execute the code analysis stage
                 echo 'Stage 3: Code Analysis - Integrate SonarQube for code analysis'
             }
         }
         stage('Security Scan') {
             steps {
+                // Execute the security scan stage
                 echo 'Stage 4: Security Scan - Perform security scans with OWASP ZAP'
             }
             post {
                 success {
+                    // Actions to take on success
                     echo 'Security Scan passed!'
                     emailStatus('Security Scan', 'Passed Security Scan Successfully')
                 }
                 failure {
+                    // Actions to take on failure
                     echo 'Security Scan failed!'
                     emailStatus('Security Scan', 'Failed Security Scan')
                 }
@@ -49,19 +62,21 @@ pipeline {
         }
         stage('Deploy to Staging') {
             steps {
+                // Execute the deploy to staging stage
                 echo 'Stage 5: Deploy to Staging - Deploy the application to a staging server'
             }
         }
         stage('Integration Tests on Staging') {
             steps {
+                // Execute the integration tests on staging stage
                 echo 'Stage 6: Integration Tests on Staging - Run integration tests on the staging environment'
             }
         }
         stage('Deploy to Production') {
             steps {
+                // Execute the deploy to production stage
                 echo 'Stage 7: Deploy to Production - Deploy the application to a production server'
             }
         }
     }
-
-
+}
