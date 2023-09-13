@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Build using Maven') {
+        stage('Build using maven') {
             steps {
                 script {
                     // Set up Maven
