@@ -127,7 +127,7 @@ pipeline {
         stage('Deploy to Staging') {
             steps {
                  // Example: Deploy to staging server (replace with your deployment commands)
-                    sh "chmod +x /Users/adhi/.jenkins/workspace/Pipeline_Automation/deploy.sh"                
+                    sh "chmod +x deploy.sh"                
                 sh './deploy.sh'
             }
             post {
