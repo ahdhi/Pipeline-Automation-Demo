@@ -13,7 +13,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Stage 1: Build - Build the code using Maven'
-                sleep(time: 3, unit: 'SECONDS')
+                
             }
         }
         stage('Unit and Integration Tests') {
